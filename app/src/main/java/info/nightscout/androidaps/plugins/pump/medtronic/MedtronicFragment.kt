@@ -92,7 +92,7 @@ class MedtronicFragment : Fragment() {
             } else {
                 medtronic_refresh.isEnabled = false
                 MedtronicPumpPlugin.getPlugin().resetStatusState()
-                ConfigBuilderPlugin.getPlugin().commandQueue.readStatus("Clicked refresh", object : Callback() {
+                ConfigBuilderPlugin.getPlugin().commandQueue.readStatus("Clicked refreshMedtronicConverter", object : Callback() {
                     override fun run() {
                         activity?.runOnUiThread { medtronic_refresh?.isEnabled = true }
                     }
