@@ -261,20 +261,22 @@ public class BLEComm {
 
     private synchronized void writeCharacteristic_NO_RESPONSE(final BluetoothGattCharacteristic characteristic, final byte[] data) {
         new Thread(() -> {
-            SystemClock.sleep(WRITE_DELAY_MILLIS);
+            synchronized (this) {
+                SystemClock.sleep(WRITE_DELAY_MILLIS);
 
-            if ((mBluetoothAdapter == null) || (mBluetoothGatt == null)) {
-                log.error("BluetoothAdapter not initialized_ERROR");
-                isConnecting = false;
-                isConnected = false;
-                return;
+                if ((mBluetoothAdapter == null) || (mBluetoothGatt == null)) {
+                    log.error("BluetoothAdapter not initialized_ERROR");
+                    isConnecting = false;
+                    isConnected = false;
+                    return;
+                }
+
+                characteristic.setValue(data);
+                characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+                if (L.isEnabled(L.PUMPBTCOMM))
+                    log.debug("writeCharacteristic:" + DanaRS_Packet.toHexString(data));
+                mBluetoothGatt.writeCharacteristic(characteristic);
             }
-
-            characteristic.setValue(data);
-            characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
-            if (L.isEnabled(L.PUMPBTCOMM))
-                log.debug("writeCharacteristic:" + DanaRS_Packet.toHexString(data));
-            mBluetoothGatt.writeCharacteristic(characteristic);
         }).start();
     }
 
